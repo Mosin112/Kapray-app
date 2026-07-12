@@ -39,6 +39,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7c2608fd-2dc0-477e-8459-f5dcbf389c90"
+      }
+    },
+    "owner": "mosindev1s-team"
   }
 }
