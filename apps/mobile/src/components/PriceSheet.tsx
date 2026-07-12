@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radii, type } from '../theme/tokens';
@@ -38,11 +38,10 @@ export function PriceSheet({
 }) {
   const [pending, setPending] = useState<PriceFilter>(initial);
   // Re-seed pending state each time the sheet opens.
-  const [wasVisible, setWasVisible] = useState(visible);
-  if (visible !== wasVisible) {
-    setWasVisible(visible);
+  useEffect(() => {
     if (visible) setPending(initial);
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- initial is a snapshot taken on open
+  }, [visible]);
 
   const n = countFor(pending);
 
