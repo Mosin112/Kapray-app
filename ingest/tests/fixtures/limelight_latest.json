@@ -1,0 +1,339 @@
+{
+  "brand_slug": "limelight",
+  "scraped_at": "2026-07-12T18:50:07.477373+05:00",
+  "currency": "PKR",
+  "products": [
+    {
+      "external_id": "8040506785880",
+      "title": "Lawn Dress",
+      "product_url": "https://www.limelight.pk/products/p9863gp-sml-404",
+      "category": "rtw",
+      "fabric": null,
+      "tags": [
+        "cutlines",
+        "cutlines usa/uk/uae",
+        "daily wear usa/uk/uae",
+        "daily wear without embroidery",
+        "daily wear without embroidery usa/uk/uae",
+        "dyed",
+        "lawn",
+        "lawn pret",
+        "new on sale",
+        "pret",
+        "pret sale",
+        "pret sale summer",
+        "pret summer 30-50% off",
+        "pret summer sale",
+        "pret usa\\uk\\uae",
+        "pret without embroidery",
+        "ready to wear",
+        "sale",
+        "sale 25",
+        "sale women",
+        "sale15",
+        "shirt",
+        "summer",
+        "summer 24",
+        "summer pret '24",
+        "summer pret '24 usa/uk/uae",
+        "trends",
+        "upto 50%",
+        "video",
+        "western sale summer",
+        "without embroidered",
+        "without embroidery",
+        "women",
+        "women sale"
+      ],
+      "images": [
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/DSC02553_005fcb88-51b6-4b18-b60b-3b7651c20ef4.jpg?v=1754132254",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/DSC02564_f8e02aef-a151-42ae-bec2-3d4eb16384cb.jpg?v=1754132254",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/DSC02567_685e4455-ab63-45a1-89f1-c74e5d1341bc.jpg?v=1754132254",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/DSC02559_06958169-3e4c-4805-8469-e56db9155ed8.jpg?v=1754132254",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/DSC02556_8dca6d29-4f18-4b12-b334-963709b5ba4d.jpg?v=1754132254",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/DSC02562_b00f73cc-3c36-4dfc-9600-31d0416b691b.jpg?v=1754132254"
+      ],
+      "variants": [
+        {
+          "external_id": "42996800225368",
+          "title": "Extra Small",
+          "price": 1999.0,
+          "compare_at_price": 4199.0,
+          "available": false
+        },
+        {
+          "external_id": "42996800258136",
+          "title": "Small",
+          "price": 1999.0,
+          "compare_at_price": 4199.0,
+          "available": true
+        },
+        {
+          "external_id": "42996800290904",
+          "title": "Medium",
+          "price": 1999.0,
+          "compare_at_price": 4199.0,
+          "available": false
+        },
+        {
+          "external_id": "42996800323672",
+          "title": "Large",
+          "price": 1999.0,
+          "compare_at_price": 4199.0,
+          "available": false
+        },
+        {
+          "external_id": "42996800356440",
+          "title": "Extra Large",
+          "price": 1999.0,
+          "compare_at_price": 4199.0,
+          "available": false
+        }
+      ]
+    },
+    {
+      "external_id": "7378017452120",
+      "title": "Silk Top",
+      "product_url": "https://www.limelight.pk/products/w1404tp-sml-ior",
+      "category": "western",
+      "fabric": null,
+      "tags": [
+        "ALL SEASONS",
+        "Citem | W1404TP-XSL-GRN",
+        "GLAM EASTERN TOP",
+        "GLAM WITHOUT EMBROIDERY EASTERN TOP",
+        "new on sale",
+        "old",
+        "pret summer sale",
+        "PRINTED",
+        "printed all season tops",
+        "Printed Short Kurti",
+        "Ritem | i6138rg-fre-gdn",
+        "Ritem | i6968er-fre-gdn",
+        "Ritem | lb32003-fre-bge",
+        "Ritem | s0656fl-beg",
+        "Ritem | w1457jn-028-000",
+        "sale",
+        "Sale Women",
+        "sale15",
+        "Short Kurti",
+        "Silksummer",
+        "Summer 23",
+        "summersummer",
+        "TOPS",
+        "W1404TP-SHIRT",
+        "WESTERN",
+        "western sale summer",
+        "WOMEN",
+        "women sale"
+      ],
+      "images": [
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/CAM_4729.jpg?v=1753424527",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/CAM_4735_82bcebc0-0349-4c0c-8f5d-ed6bdff8280d.jpg?v=1753424527",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/CAM_4731.jpg?v=1753424527",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/CAM_4733.jpg?v=1753424527",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/W1404SH.png?v=1753424527"
+      ],
+      "variants": [
+        {
+          "external_id": "40259039428696",
+          "title": "Extra Small",
+          "price": 2399.2,
+          "compare_at_price": 2999.0,
+          "available": false
+        },
+        {
+          "external_id": "40259039920216",
+          "title": "Small",
+          "price": 2399.2,
+          "compare_at_price": 2999.0,
+          "available": false
+        },
+        {
+          "external_id": "40259039952984",
+          "title": "Medium",
+          "price": 2399.2,
+          "compare_at_price": 2999.0,
+          "available": true
+        },
+        {
+          "external_id": "40259039985752",
+          "title": "Large",
+          "price": 2399.2,
+          "compare_at_price": 2999.0,
+          "available": false
+        }
+      ]
+    },
+    {
+      "external_id": "8710456442968",
+      "title": "Lawn Co-ord set",
+      "product_url": "https://www.limelight.pk/products/a5288st-xsl-360",
+      "category": "co-ords",
+      "fabric": null,
+      "tags": [
+        "2026",
+        "A5288ST-SHIRT",
+        "all summer 26",
+        "CO-ORDS",
+        "new in",
+        "Printed Co-Ords",
+        "summer",
+        "women"
+      ],
+      "images": [
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/A5288ST-XSL-360CambricCo-ordset_5.jpg?v=1774588599",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/A5288ST-XSL-360CambricCo-ordset_4.jpg?v=1774588599",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/A5288ST-XSL-360CambricCo-ordset_3.jpg?v=1774588599",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/A5288ST-XSL-360CambricCo-ordset_1.jpg?v=1774530262",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/A5288ST-XSL-360CambricCo-ordset_2.jpg?v=1774530262"
+      ],
+      "variants": [
+        {
+          "external_id": "43915318427736",
+          "title": "Extra Small",
+          "price": 3899.0,
+          "compare_at_price": 3899.0,
+          "available": false
+        },
+        {
+          "external_id": "43915318460504",
+          "title": "Small",
+          "price": 3899.0,
+          "compare_at_price": 3899.0,
+          "available": false
+        },
+        {
+          "external_id": "43915318493272",
+          "title": "Medium",
+          "price": 3899.0,
+          "compare_at_price": 3899.0,
+          "available": false
+        },
+        {
+          "external_id": "43915318526040",
+          "title": "Large",
+          "price": 3899.0,
+          "compare_at_price": 3899.0,
+          "available": true
+        }
+      ]
+    },
+    {
+      "external_id": "8641309245528",
+      "title": "2 Piece Viscose Suit- Embroidered (Pret)",
+      "product_url": "https://www.limelight.pk/products/f3664st-809-143",
+      "category": "girls",
+      "fabric": null,
+      "tags": [
+        "2026",
+        "all summer 26",
+        "Casual - Girls",
+        "CASUAL GIRLS INT",
+        "F3664ST-SHIRT",
+        "Girls",
+        "GIRLS INT",
+        "Girls Sale",
+        "GIRLS SUMMER INT",
+        "sale",
+        "summer"
+      ],
+      "images": [
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/F3664ST-809-143-2PieceViscoseSuit-Embroidered_Pret_1.jpg?v=1768994496",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/F3664ST-809-143-2PieceViscoseSuit-Embroidered_Pret_2.jpg?v=1768994496",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/F3664ST-809-143-2PieceViscoseSuit-Embroidered_Pret_3.jpg?v=1768994496"
+      ],
+      "variants": [
+        {
+          "external_id": "43681070940248",
+          "title": "8-9 Years",
+          "price": 3224.25,
+          "compare_at_price": 4299.0,
+          "available": false
+        },
+        {
+          "external_id": "43681070973016",
+          "title": "10-11 Years",
+          "price": 3224.25,
+          "compare_at_price": 4299.0,
+          "available": false
+        },
+        {
+          "external_id": "43681071005784",
+          "title": "12-13 Years",
+          "price": 3374.25,
+          "compare_at_price": 4499.0,
+          "available": false
+        },
+        {
+          "external_id": "43681071038552",
+          "title": "14-15 Years",
+          "price": 3374.25,
+          "compare_at_price": 4499.0,
+          "available": true
+        }
+      ]
+    },
+    {
+      "external_id": "8647298416728",
+      "title": "3 Piece Slub Khaddar- Embroidered (Pret)",
+      "product_url": "https://www.limelight.pk/products/a3711su-xsl-034",
+      "category": "rtw",
+      "fabric": null,
+      "tags": [
+        "2025",
+        "3 Piece",
+        "30-50% off",
+        "A3711SU-SHIRT",
+        "DAILY WEAR (INT)",
+        "DAILY WEAR (PRET)",
+        "EMBROIDERED (PRET)",
+        "EMBROIDERED INT",
+        "READY TO WEAR",
+        "RTW winter sale",
+        "sale",
+        "Winter",
+        "winter INT",
+        "winter sale all",
+        "women",
+        "women INT"
+      ],
+      "images": [
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/A3711SU-XSL-0343PieceSlubKhaddar-Embroidered_Pret_01_1.jpg?v=1769508064",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/A3711SU-XSL-0343PieceSlubKhaddar-Embroidered_Pret_01_2.jpg?v=1769508065",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/A3711SU-XSL-0343PieceSlubKhaddar-Embroidered_Pret_01_3.jpg?v=1769508064",
+        "https://cdn.shopify.com/s/files/1/2635/3244/files/A3711SU-XSL-0343PieceSlubKhaddar-Embroidered_Pret_01_4.jpg?v=1769508064"
+      ],
+      "variants": [
+        {
+          "external_id": "43696627187800",
+          "title": "Extra Small",
+          "price": 7999.0,
+          "compare_at_price": 9899.0,
+          "available": true
+        },
+        {
+          "external_id": "43696627220568",
+          "title": "Small",
+          "price": 7999.0,
+          "compare_at_price": 9899.0,
+          "available": false
+        },
+        {
+          "external_id": "43696627253336",
+          "title": "Medium",
+          "price": 7999.0,
+          "compare_at_price": 9899.0,
+          "available": false
+        },
+        {
+          "external_id": "43696627286104",
+          "title": "Large",
+          "price": 7999.0,
+          "compare_at_price": 9899.0,
+          "available": false
+        }
+      ]
+    }
+  ]
+}

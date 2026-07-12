@@ -1,16 +1,50 @@
 # Kapray
 
-A React Native (Expo) mobile app.
+A mobile **aggregator** of Pakistani women's fashion brands (Nishat Linen, Limelight, Khaadi at launch). Kapray syncs brand catalogs, surfaces campaigns/sales/drops in one feed, and sends push alerts. Checkout happens on the **brand's own site inside an in-app WebView** — Kapray is not a retailer.
 
-## Status
+> Full product spec: [`docs/kapray-claude-code-spec.md`](docs/kapray-claude-code-spec.md) — the single source of truth.
 
-🚧 Early setup — project scaffolding in progress. Full spec and feature set to follow.
+## Monorepo layout
 
-## Tech Stack
+```
+kapray/
+├── CLAUDE.md          # working conventions for this repo
+├── apps/mobile/       # Expo app (React Native + TypeScript)   [Phase 2+]
+├── scraper/           # existing Python scraper (do not rewrite)
+├── ingest/            # drops → Supabase: validate, upsert, diff, events
+├── supabase/          # migrations (schema source of truth), functions, seed
+└── docs/              # spec + reference material
+```
 
-- **Framework:** React Native + Expo
-- **Language:** TypeScript
+## Stack
 
-## Getting Started
+| Layer | Choice |
+|---|---|
+| Mobile | React Native + Expo (managed, TypeScript), Expo Router |
+| Backend | Supabase (Postgres, Auth, Edge Functions, Storage, Realtime) |
+| Ingestion | Python scraper → JSON drops → `ingest.py` → Supabase |
+| Push | Expo Push Notifications |
+| Checkout | In-app WebView of the brand's site (UTM-tagged) |
 
-_Setup instructions will be added once the Expo project is scaffolded._
+Postgres schema is kept **vanilla** — a self-hosted Node + Postgres migration is planned, so we avoid Supabase-only lock-in in the data layer.
+
+## Build status
+
+Work proceeds in phases (see spec §10). Current:
+
+- [x] **Phase 0** — monorepo scaffold, schema migrations, RLS, brand seed
+- [ ] **Phase 1** — ingest pipeline (validate → upsert → diff → events → campaign detect)
+- [ ] **Phase 2** — app core (browse: Home / PDP / Brand / Sales)
+- [ ] **Phase 3** — identity & engagement (auth, follows, wishlist, alerts)
+- [ ] **Phase 4** — WebView checkout + notifications
+- [ ] **Phase 5** — hardening & release
+
+## Getting started
+
+Each package has its own README:
+
+- Scraper — [`scraper/README.md`](scraper/README.md)
+- Ingest — [`ingest/README.md`](ingest/README.md)
+- Supabase — [`supabase/README.md`](supabase/README.md)
+
+Copy [`.env.example`](.env.example) to `.env` and fill in your Supabase project values before running the ingest or the app.

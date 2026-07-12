@@ -1,0 +1,35 @@
+{
+  "nishat": {
+    "name": "Nishat Linen",
+    "platform": "shopify",
+    "base_url": "https://nishatlinen.com",
+    "currency": "PKR",
+    "enabled": true
+  },
+  "limelight": {
+    "name": "Limelight",
+    "platform": "shopify",
+    "base_url": "https://www.limelight.pk",
+    "currency": "PKR",
+    "enabled": true
+  },
+  "khaadi": {
+    "name": "Khaadi",
+    "platform": "khaadi_sfcc",
+    "base_url": "https://us.khaadi.com",
+    "currency": "USD",
+    "enabled": true,
+    "categories": [
+      "/new-in/ready-to-wear/",
+      "/sale/ready-to-wear/"
+    ]
+  },
+  "sapphire": {
+    "name": "Sapphire",
+    "platform": "shopify",
+    "base_url": "https://pk.sapphireonline.pk",
+    "currency": "PKR",
+    "enabled": false,
+    "note": "Blocks all automated access as of Jul 2026. Enable once a partnership feed exists."
+  }
+}
