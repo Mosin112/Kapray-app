@@ -32,12 +32,15 @@ Postgres schema is kept **vanilla** — a self-hosted Node + Postgres migration 
 
 Work proceeds in phases (see spec §10). Current:
 
-- [x] **Phase 0** — monorepo scaffold, schema migrations, RLS, brand seed
-- [ ] **Phase 1** — ingest pipeline (validate → upsert → diff → events → campaign detect)
-- [ ] **Phase 2** — app core (browse: Home / PDP / Brand / Sales)
-- [ ] **Phase 3** — identity & engagement (auth, follows, wishlist, alerts)
-- [ ] **Phase 4** — WebView checkout + notifications
+- [x] **Phase 0** — monorepo scaffold, schema migrations, RLS, seed (18 real products from the prototype)
+- [x] **Phase 1** — ingest pipeline (validate → upsert → diff → events → campaign detect); 21 tests passing
+- [x] **Phase 2** — app core (browse: Home / PDP / Brand / Sales / Saved) — pending live-device verification against a hosted Supabase project
+- [ ] **Phase 3** — identity & engagement (auth, follows, wishlist sync, alerts)
+- [ ] **Phase 4** — WebView analytics + push notifications
 - [ ] **Phase 5** — hardening & release
+
+**Blocked on:** hosted Supabase project URL + keys in `.env` (then: `supabase link`,
+`db push`, seed, type generation, and a device run of the app).
 
 ## Getting started
 
