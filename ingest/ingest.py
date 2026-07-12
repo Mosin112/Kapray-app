@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Kapray ingest CLI — drops/ → Supabase.
 
-Runs after the scraper. Reads each brand's `latest.json` (or every new
-timestamped drop with --all-files), validates, upserts, diffs, and emits
-product_events + campaign suggestions.
+Runs after the scraper. Processes every not-yet-ingested TIMESTAMPED drop
+file, oldest first (latest.json is only a pointer and is ignored — see
+discover_files). Validates, upserts, diffs, and emits product_events +
+campaign suggestions.
 
 Usage:
-  python3 ingest.py run                         # all brands' latest.json → Supabase
+  python3 ingest.py run                         # all new drops → Supabase
   python3 ingest.py run --brand nishat,limelight
-  python3 ingest.py run --all-files             # every timestamped drop, oldest→newest
   python3 ingest.py run --dry-run               # in-memory, prints a summary, writes nothing
   python3 ingest.py run --drops-dir path/to/drops
 
@@ -43,20 +43,22 @@ def load_dotenv(path: Path) -> None:
         os.environ.setdefault(k.strip(), v.strip())
 
 
-def discover_files(drops_dir: Path, brands: list | None, all_files: bool) -> list:
-    """Return [(path, drop_file_key)] to ingest, oldest first."""
+def discover_files(drops_dir: Path, brands: list | None) -> list:
+    """Return [(path, drop_file_key)] to ingest, oldest first.
+
+    Only TIMESTAMPED drops are processed (spec §5.1: "process new timestamped
+    files since last ingest, tracked in ingest_runs"). latest.json is just a
+    pointer whose name never changes — keying idempotency on it would skip
+    fresh content forever, so it is deliberately ignored. Already-ingested
+    files are skipped downstream by the (brand_slug, drop_file) guard.
+    """
     jobs = []
     for brand_dir in sorted(p for p in drops_dir.iterdir() if p.is_dir()):
         if brand_dir.name.startswith("_"):
             continue  # skip _failed/
         if brands and brand_dir.name not in brands:
             continue
-        if all_files:
-            files = sorted(f for f in brand_dir.glob("*.json") if f.name != "latest.json")
-        else:
-            latest = brand_dir / "latest.json"
-            files = [latest] if latest.exists() else []
-        for f in files:
+        for f in sorted(f for f in brand_dir.glob("*.json") if f.name != "latest.json"):
             jobs.append((f, f"{brand_dir.name}/{f.name}"))
     return jobs
 
@@ -68,8 +70,6 @@ def main() -> int:
     p = sub.add_parser("run", help="ingest drop files")
     p.add_argument("--brand", help="comma-separated slugs (default: all)")
     p.add_argument("--drops-dir", help="override drops directory")
-    p.add_argument("--all-files", action="store_true",
-                   help="ingest every timestamped drop, not just latest.json")
     p.add_argument("--dry-run", action="store_true",
                    help="use an in-memory store; write nothing to Supabase")
     args = ap.parse_args()
@@ -100,7 +100,7 @@ def main() -> int:
             log.error("missing env var %s — copy .env.example to .env and fill it in.", e)
             return 2
 
-    jobs = discover_files(drops_dir, brands, args.all_files)
+    jobs = discover_files(drops_dir, brands)
     if not jobs:
         log.warning("no drop files found under %s", drops_dir)
         return 0

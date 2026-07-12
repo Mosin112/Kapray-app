@@ -4,13 +4,13 @@ Consumes the scraper's canonical JSON drops and lands them in Supabase:
 **validate → upsert → diff → `product_events` → campaign auto-detect**, idempotently.
 
 ```
-drops/{brand}/latest.json ──▶ ingest.py ──▶ Supabase (brands, products, variants,
+drops/{brand}/{timestamp}.json ──▶ ingest.py ──▶ Supabase (brands, products, variants,
                                              product_images, product_events, campaigns)
 ```
 
 ## How it works
 
-1. **Validate** each drop against [`schemas/product_feed.schema.json`](schemas/product_feed.schema.json) (matches the scraper output, spec §5). Invalid files are quarantined to `drops/_failed/` with an error log.
+1. **Validate** each new timestamped drop against [`schemas/product_feed.schema.json`](schemas/product_feed.schema.json) (matches the scraper output, spec §5). Invalid files are quarantined to `drops/_failed/` with an error log.
 2. **Upsert** brand → products → images → variants (match on `brand_id + external_id`).
 3. **Diff** incoming vs stored variant `price`/`available`:
    - price down → `price_drop`, up → `price_rise`
@@ -38,13 +38,18 @@ pip install -r requirements.txt
 # Configure Supabase (repo-root .env; see ../.env.example)
 #   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 
-python3 ingest.py run                 # all brands' latest.json → Supabase
+python3 ingest.py run                 # every not-yet-ingested drop → Supabase
 python3 ingest.py run --brand nishat  # one brand
-python3 ingest.py run --all-files     # every timestamped drop, oldest→newest
 python3 ingest.py run --dry-run       # in-memory; prints a summary, writes nothing
 ```
 
 `--dry-run` needs no database or keys — good for eyeballing what a set of drops would produce.
+
+Ingest processes **timestamped** drop files oldest-first and skips ones already
+recorded in `ingest_runs`. (`latest.json` is only a pointer — its name never
+changes, so it can't key idempotency.) Because absence from 3 consecutive feeds
+deactivates a product, **production scrapes must run without `--limit`**: a
+partial feed makes everything outside the limit look absent.
 
 ## Test
 

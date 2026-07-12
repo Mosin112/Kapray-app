@@ -20,6 +20,8 @@ Usage:
   python3 scraper.py loop --interval 30     # re-run every 30 minutes
   python3 scraper.py status                 # last run per brand
 """
+from __future__ import annotations  # allow `int | None` hints on Python 3.9
+
 import argparse
 import hashlib
 import json
