@@ -47,6 +47,18 @@ transitions (pg_cron). Not built yet.
 
 ## Status
 
-Migrations + seed are **written but not yet applied** — pending the hosted
-project URL/keys in `.env`. Once linked, `supabase db push` should run clean
-(spec §10 Phase 0 acceptance).
+**Applied to the hosted project** (`yqjjhsbmirsumqflsjfg`, ap-southeast-1) on
+2026-07-12: all 4 migrations + seed. RLS verified via the publishable key
+(catalog readable, writes denied, internal tables invisible). Types generated
+into `apps/mobile/src/types/database.ts`.
+
+Note: this network has no IPv6 route, so the CLI connects through the IPv4
+session pooler — `aws-0-ap-southeast-1.pooler.supabase.com:5432` with user
+`postgres.yqjjhsbmirsumqflsjfg` — rather than the direct `db.*` host. Password
+comes from `SUPABASE_DB_PASSWORD` in the root `.env`:
+
+```bash
+source .env
+supabase db push --db-url "postgresql://postgres.yqjjhsbmirsumqflsjfg:${SUPABASE_DB_PASSWORD}@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+supabase gen types typescript --project-id yqjjhsbmirsumqflsjfg --schema public > apps/mobile/src/types/database.ts
+```

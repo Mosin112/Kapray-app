@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
+import type { Database } from '../types/database';
+
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -16,7 +18,7 @@ if (!url || !anonKey) {
  * Anon-key client: catalog reads are public via RLS; user features (Phase 3)
  * will layer auth on this same client.
  */
-export const supabase = createClient(url, anonKey, {
+export const supabase = createClient<Database>(url, anonKey, {
   auth: {
     // Phase 3 wires AsyncStorage-backed session persistence + phone OTP.
     persistSession: false,
