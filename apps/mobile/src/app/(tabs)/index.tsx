@@ -15,16 +15,9 @@ import { CampaignBanner } from '../../components/CampaignBanner';
 import { EmptyState } from '../../components/EmptyState';
 import { PriceSheet, type PriceFilter } from '../../components/PriceSheet';
 import { ProductPin } from '../../components/ProductPin';
-import { useFeedProducts, useLiveCampaigns } from '../../lib/queries';
+import { useBrands, useFeedProducts, useLiveCampaigns } from '../../lib/queries';
 import { colors, layout, type } from '../../theme/tokens';
 import type { FeedProduct } from '../../types/db';
-
-const BRAND_CHIPS = [
-  { slug: 'all', label: 'All brands' },
-  { slug: 'nishat', label: 'Nishat Linen' },
-  { slug: 'limelight', label: 'Limelight' },
-  { slug: 'khaadi', label: 'Khaadi' },
-];
 
 /** Prototype `match()` semantics: search across title+brand (+fabric),
  * brand chip, price range on the first variant, sale-only on compare-at. */
@@ -47,11 +40,23 @@ function matches(
 export default function HomeScreen() {
   const { data: products, isLoading, error, refetch } = useFeedProducts();
   const { data: campaigns } = useLiveCampaigns();
+  const { data: brands } = useBrands();
 
   const [q, setQ] = useState('');
   const [brand, setBrand] = useState('all');
   const [filter, setFilter] = useState<PriceFilter>({ range: null, saleOnly: false });
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  // Brand chips = every live brand (alphabetical), preceded by "All brands".
+  const brandChips = useMemo(
+    () => [
+      { slug: 'all', label: 'All brands' },
+      ...(brands ?? [])
+        .filter((b) => b.sync_status === 'live')
+        .map((b) => ({ slug: b.slug, label: b.name })),
+    ],
+    [brands],
+  );
 
   const list = useMemo(
     () =>
@@ -101,7 +106,7 @@ export default function HomeScreen() {
             Price <Text style={{ fontSize: 9, opacity: 0.65 }}>▾</Text>
           </Text>
         </Pressable>
-        {BRAND_CHIPS.map((b) => (
+        {brandChips.map((b) => (
           <Pressable
             key={b.slug}
             style={[styles.chip, brand === b.slug && styles.chipOn]}

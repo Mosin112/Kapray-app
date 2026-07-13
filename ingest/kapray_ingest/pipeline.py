@@ -49,15 +49,8 @@ def ingest_feed(store: Store, feed: dict, drop_file: str) -> IngestResult:
     run = diffmod.diff_feed(stored, incoming)
 
     # 2. Upsert products/images/variants; build ext→id maps for event resolution.
-    pid_by_ext: dict[str, str] = {}
-    vid_by: dict[tuple, str] = {}
-    for prod in incoming:
-        pid = store.upsert_product(brand_id, prod)
-        pid_by_ext[prod["external_id"]] = pid
-        store.replace_images(pid, prod.get("images", []))
-        for v in prod.get("variants", []):
-            vid = store.upsert_variant(pid, v)
-            vid_by[(pid, v["external_id"])] = vid
+    #    Batched by the store (one bulk request per table for the whole feed).
+    pid_by_ext, vid_by = store.upsert_catalog(brand_id, incoming)
 
     # 3. Missing / removed handling (spec §5.3): bump absent products; deactivate
     #    + emit `removed` once they've missed MISSING_THRESHOLD consecutive feeds.

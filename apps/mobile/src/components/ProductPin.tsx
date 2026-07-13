@@ -19,6 +19,7 @@ export function ProductPin({ product, index }: { product: FeedProduct; index: nu
   const wishlist = useWishlist();
   const v = product.variants[0];
   const off = v ? offPct(v.price, v.compare_at_price) : null;
+  const onSale = off != null; // compare-at strictly above price
   const img = product.images[0]?.src;
   const saved = wishlist.has(product.id);
   const currency = product.brand.currency;
@@ -69,8 +70,8 @@ export function ProductPin({ product, index }: { product: FeedProduct; index: nu
         </Text>
         <Text style={styles.price}>
           {v ? fmtPrice(currency, v.price) : ''}
-          {v?.compare_at_price ? (
-            <Text style={styles.compareAt}>  {fmtPrice(currency, v.compare_at_price)}</Text>
+          {onSale ? (
+            <Text style={styles.compareAt}>  {fmtPrice(currency, v!.compare_at_price!)}</Text>
           ) : null}
         </Text>
       </View>

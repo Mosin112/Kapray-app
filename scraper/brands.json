@@ -24,12 +24,54 @@
       "/sale/ready-to-wear/"
     ]
   },
+  "sanasafinaz": {
+    "name": "Sana Safinaz",
+    "platform": "shopify",
+    "base_url": "https://www.sanasafinaz.com",
+    "currency": "PKR",
+    "enabled": true
+  },
+  "mariab": {
+    "name": "Maria B",
+    "platform": "shopify",
+    "base_url": "https://www.mariab.pk",
+    "currency": "PKR",
+    "enabled": true
+  },
+  "alkaram": {
+    "name": "Alkaram Studio",
+    "platform": "shopify",
+    "base_url": "https://www.alkaramstudio.com",
+    "currency": "PKR",
+    "enabled": true
+  },
+  "bonanza": {
+    "name": "Bonanza Satrangi",
+    "platform": "shopify",
+    "base_url": "https://bonanzasatrangi.com",
+    "currency": "PKR",
+    "enabled": true
+  },
+  "beechtree": {
+    "name": "BEECHTREE",
+    "platform": "shopify",
+    "base_url": "https://beechtree.pk",
+    "currency": "PKR",
+    "enabled": true
+  },
+  "gulahmed": {
+    "name": "Gul Ahmed",
+    "platform": "shopify",
+    "base_url": "https://www.gulahmedshop.com",
+    "currency": "PKR",
+    "enabled": true
+  },
   "sapphire": {
     "name": "Sapphire",
     "platform": "shopify",
     "base_url": "https://pk.sapphireonline.pk",
     "currency": "PKR",
     "enabled": false,
-    "note": "Blocks all automated access as of Jul 2026. Enable once a partnership feed exists."
+    "note": "Blocks all automated access (products.json 404s) as of Jul 2026. Enable once a partnership feed exists."
   }
 }

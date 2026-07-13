@@ -20,6 +20,12 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _chunks(seq: list, n: int):
+    """Yield successive n-sized chunks (keeps bulk requests within safe limits)."""
+    for i in range(0, len(seq), n):
+        yield seq[i:i + n]
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Interface
 # ─────────────────────────────────────────────────────────────────────────────
@@ -46,6 +52,25 @@ class Store:
 
     def upsert_variant(self, product_id: str, variant: dict) -> str:
         raise NotImplementedError
+
+    def upsert_catalog(self, brand_id: str, products: list[dict]) -> tuple[dict, dict]:
+        """Upsert every product + its images + variants for one brand.
+
+        Returns (pid_by_ext, vid_by): {product_ext: uuid} and
+        {(product_uuid, variant_ext): uuid}. The default loops the single-row
+        methods (fine for tests / small feeds); SupabaseRestStore overrides it
+        with bulk requests so a full catalog is a handful of round-trips, not
+        thousands.
+        """
+        pid_by_ext: dict[str, str] = {}
+        vid_by: dict[tuple, str] = {}
+        for prod in products:
+            pid = self.upsert_product(brand_id, prod)
+            pid_by_ext[prod["external_id"]] = pid
+            self.replace_images(pid, prod.get("images", []))
+            for v in prod.get("variants", []):
+                vid_by[(pid, v["external_id"])] = self.upsert_variant(pid, v)
+        return pid_by_ext, vid_by
 
     def insert_events(self, rows: list[dict]) -> int:
         """rows: {product_id, variant_id|None, type, old_value, new_value}."""
@@ -217,10 +242,28 @@ class SupabaseRestStore(Store):
         if not rows:
             return []
         headers = {**self._headers, "Prefer": "return=minimal"}
-        r = self._requests.post(f"{self.rest}/{table}", headers=headers,
-                                data=json.dumps(rows), timeout=30)
-        r.raise_for_status()
+        for chunk in _chunks(rows, 500):
+            r = self._requests.post(f"{self.rest}/{table}", headers=headers,
+                                    data=json.dumps(chunk), timeout=60)
+            r.raise_for_status()
         return rows
+
+    def _upsert_bulk(self, table: str, rows: list[dict], on_conflict: str,
+                     select: str) -> list:
+        """Bulk upsert; returns the merged rows (only the `select` columns).
+        Chunked so a full catalog stays a few requests, not thousands."""
+        if not rows:
+            return []
+        headers = {**self._headers,
+                   "Prefer": "resolution=merge-duplicates,return=representation"}
+        out: list = []
+        for chunk in _chunks(rows, 500):
+            r = self._requests.post(f"{self.rest}/{table}", headers=headers,
+                                    params={"on_conflict": on_conflict, "select": select},
+                                    data=json.dumps(chunk), timeout=60)
+            r.raise_for_status()
+            out.extend(r.json())
+        return out
 
     def _patch(self, table: str, params: dict, patch: dict) -> None:
         r = self._requests.patch(f"{self.rest}/{table}", headers=self._headers,
@@ -308,6 +351,66 @@ class SupabaseRestStore(Store):
             "available": bool(variant["available"]),
         }, on_conflict="product_id,external_id")
         return row["id"]
+
+    def upsert_catalog(self, brand_id: str, products: list[dict]) -> tuple[dict, dict]:
+        """Bulk version: 1 upsert for all products, 1 delete + 1 insert for
+        images, 1 upsert for all variants — instead of ~4 round-trips per
+        product. Turns a multi-thousand-product feed from thousands of HTTP
+        calls into a handful."""
+        if not products:
+            return {}, {}
+
+        prod_rows = [{
+            "brand_id": brand_id,
+            "external_id": p["external_id"],
+            "title": p["title"],
+            "product_url": p["product_url"],
+            "category": p.get("category"),
+            "fabric": p.get("fabric"),
+            "tags": p.get("tags", []),
+            "last_seen_at": _now_iso(),
+            "is_active": True,
+            "missing_count": 0,
+        } for p in products]
+        returned = self._upsert_bulk("products", prod_rows,
+                                     on_conflict="brand_id,external_id",
+                                     select="id,external_id")
+        pid_by_ext = {r["external_id"]: r["id"] for r in returned}
+
+        # Images: clear then re-insert for exactly the products in this feed.
+        pids = list(pid_by_ext.values())
+        for chunk in _chunks(pids, 100):
+            self._delete("product_images", {"product_id": f"in.({','.join(chunk)})"})
+        img_rows = []
+        for p in products:
+            pid = pid_by_ext.get(p["external_id"])
+            if not pid:
+                continue
+            for i, src in enumerate(p.get("images", [])):
+                img_rows.append({"product_id": pid, "src": src, "position": i + 1})
+        self._insert("product_images", img_rows)
+
+        # Variants: one bulk upsert, mapped back by (product_id, external_id).
+        var_rows = []
+        for p in products:
+            pid = pid_by_ext.get(p["external_id"])
+            if not pid:
+                continue
+            for v in p.get("variants", []):
+                var_rows.append({
+                    "product_id": pid,
+                    "external_id": v["external_id"],
+                    "title": v.get("title"),
+                    "price": float(v["price"]),
+                    "compare_at_price": (float(v["compare_at_price"])
+                                         if v.get("compare_at_price") is not None else None),
+                    "available": bool(v["available"]),
+                })
+        returned_v = self._upsert_bulk("variants", var_rows,
+                                       on_conflict="product_id,external_id",
+                                       select="id,product_id,external_id")
+        vid_by = {(r["product_id"], r["external_id"]): r["id"] for r in returned_v}
+        return pid_by_ext, vid_by
 
     def insert_events(self, rows: list[dict]) -> int:
         payload = [{

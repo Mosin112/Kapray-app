@@ -37,6 +37,7 @@ export default function ProductScreen() {
 
   const v = p.variants[0];
   const off = v ? offPct(v.price, v.compare_at_price) : null;
+  const onSale = off != null; // compare-at strictly above price
   const inStock = v?.available ?? false;
   const saved = wishlist.has(p.id);
   const currency = p.brand.currency;
@@ -89,9 +90,9 @@ export default function ProductScreen() {
           <Text style={styles.title}>{p.title}</Text>
           <Text style={styles.price}>
             {v ? fmtPrice(currency, v.price) : ''}
-            {v?.compare_at_price ? (
+            {onSale ? (
               <>
-                <Text style={styles.compareAt}>  {fmtPrice(currency, v.compare_at_price)}</Text>
+                <Text style={styles.compareAt}>  {fmtPrice(currency, v!.compare_at_price!)}</Text>
                 <Text style={styles.offPct}>  -{off}%</Text>
               </>
             ) : (

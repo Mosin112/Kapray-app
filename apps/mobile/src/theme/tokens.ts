@@ -25,6 +25,11 @@ export const brandColors: Record<string, { bg: string; fg: string }> = {
   khaadi: { bg: '#C2452D', fg: '#FFFFFF' },
   kayseria: { bg: '#8A1538', fg: '#FFFFFF' },
   gulahmed: { bg: '#1C5C34', fg: '#FFFFFF' },
+  sanasafinaz: { bg: '#1B1B1B', fg: '#D9B36A' }, // black, gold
+  mariab: { bg: '#4A1D3F', fg: '#FFFFFF' }, // plum
+  alkaram: { bg: '#0F4C81', fg: '#FFFFFF' }, // studio blue
+  bonanza: { bg: '#C0392B', fg: '#FFFFFF' }, // satrangi red
+  beechtree: { bg: '#3E5C3A', fg: '#FFFFFF' }, // leaf green
 };
 
 export const radii = {

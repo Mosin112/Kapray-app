@@ -2,7 +2,7 @@ import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BrandLogo } from '../../components/BrandLogo';
@@ -52,8 +52,17 @@ export default function BrandScreen() {
           {campaign ? ` · ${campaign.title} on now` : ''}
         </Text>
         <View style={styles.btns}>
-          {/* Follow lands with auth in Phase 3 — visible but explains itself. */}
-          <Pressable style={styles.f1}>
+          {/* Follow needs accounts (a later update); give honest feedback
+              rather than a silent dead button during testing. */}
+          <Pressable
+            style={styles.f1}
+            onPress={() =>
+              Alert.alert(
+                'Coming soon',
+                `Following ${brand.name} for drop & sale alerts arrives in the next update.`,
+              )
+            }
+          >
             <Text style={styles.f1Text}>Follow +</Text>
           </Pressable>
           <Pressable
