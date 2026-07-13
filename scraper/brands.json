@@ -16,11 +16,12 @@
   "khaadi": {
     "name": "Khaadi",
     "platform": "khaadi_sfcc",
-    "base_url": "https://us.khaadi.com",
-    "currency": "USD",
+    "base_url": "https://pk.khaadi.com",
+    "currency": "PKR",
     "enabled": true,
     "categories": [
       "/new-in/ready-to-wear/",
+      "/ready-to-wear/",
       "/sale/ready-to-wear/"
     ]
   },

@@ -134,73 +134,69 @@ def scrape_shopify(cfg: dict, limit: int | None) -> list:
     return products
 
 
-# Khaadi (Salesforce Commerce Cloud, US storefront) — parse the PLP HTML.
-KHAADI_TILE = re.compile(
-    r'\[!\[(?P<alt>[^\]]*)\]\((?P<img>https://us\.khaadi\.com/dw/image[^)]+)\)\]'
-    r'\((?P<url>https://us\.khaadi\.com/[^)]+?\.html)[^)]*\)',
+# Khaadi (Salesforce Commerce Cloud). The PK storefront (pk.khaadi.com) serves
+# PKR prices and, on each category page, a GTM `dataLayer` with clean per-product
+# impressions ({id,name,category,price}). We read those and pair each with its
+# hi-res image from the same HTML (image filename embeds the lowercased SKU).
+KHAADI_IMPRESSION = re.compile(
+    r'\{"id":"(?P<id>[^"]+)",'
+    r'"name":"(?P<name>[^"]+)",'
+    r'"category":"(?P<cat>[^"]*)",'
+    r'"price":"(?P<price>[\d.]+)"'
 )
-KHAADI_RAW_TILE = re.compile(
-    r'<a[^>]+href="(?P<url>[^"]+\.html)[^"]*"[^>]*>\s*<img[^>]+src="(?P<img>[^"]+dw/image[^"]+)"[^>]*alt="(?P<alt>[^"]*)"',
-    re.S,
+KHAADI_IMAGE = re.compile(
+    r'(?P<url>https://[^"\s]*?/dw/image/[^"\s]+?/hi-res/(?P<base>[a-z0-9\-]+?)_multi_\d+\.jpg[^"\s]*)'
 )
 
 
-def _khaadi_parse(html: str, base: str) -> dict:
-    """Extract {url: product} from a Khaadi PLP page (markdown-ish or raw html)."""
-    found = {}
-    for rx in (KHAADI_TILE, KHAADI_RAW_TILE):
-        for m in rx.finditer(html):
-            url = m.group("url").split("?")[0]
-            if not url.startswith("http"):
-                url = base + url
-            alt = m.group("alt")
-            # alt format: "Technique | Fabric | Title | USD 35.00"
-            parts = [x.strip() for x in alt.split("|")]
-            price = None
-            title = None
-            for part in parts:
-                pm = re.match(r"USD\s+([\d.]+)", part)
-                if pm:
-                    price = float(pm.group(1))
-                elif part and not price:
-                    title = part          # last non-price part before price
-            if not title:
-                title = url.rstrip("/").split("/")[-2].replace("-", " ").title()
-            ext = url.rstrip("/").split("/")[-1].replace(".html", "")
-            item = found.setdefault(url, {
-                "external_id": ext,
-                "title": title,
-                "product_url": url,
-                "category": "ready-to-wear",
-                "fabric": parts[1] if len(parts) >= 3 else None,
-                "tags": [],
-                "images": [],
-                "variants": [{
-                    "external_id": ext,
-                    "title": "Default",
-                    "price": price or 0.0,
-                    "compare_at_price": None,
-                    "available": True,
-                }],
-            })
-            img = m.group("img")
-            if img not in item["images"]:
-                item["images"].append(img)
-            if price:
-                item["variants"][0]["price"] = price
-    return found
+def _khaadi_images(html: str) -> dict:
+    """Map image-base (lowercased SKU stem) -> ordered list of hi-res image URLs."""
+    out: dict = {}
+    for m in KHAADI_IMAGE.finditer(html):
+        base = m.group("base")
+        url = m.group("url").replace("&amp;", "&")
+        out.setdefault(base, [])
+        if url not in out[base]:
+            out[base].append(url)
+    return out
 
 
 def scrape_khaadi(cfg: dict, limit: int | None) -> list:
+    """Women's ready-to-wear from pk.khaadi.com (PKR). Dedupes by SKU across the
+    configured category pages."""
     products: dict = {}
     for cat in cfg.get("categories", []):
-        body = http_get(cfg["base_url"] + cat)
+        html = http_get(cfg["base_url"] + cat)
         time.sleep(REQUEST_GAP_SECONDS)
-        products.update(_khaadi_parse(body, cfg["base_url"]))
-        if limit and len(products) >= limit:
-            break
-    out = [p for p in products.values() if p["variants"][0]["price"] > 0]
-    return out[:limit] if limit else out
+        images = _khaadi_images(html)
+        for m in KHAADI_IMPRESSION.finditer(html):
+            sku = m.group("id")
+            if sku in products:
+                continue
+            price = float(m.group("price"))
+            if price <= 0:
+                continue
+            base = sku.lower().replace("-vg_multi", "")
+            products[sku] = {
+                "external_id": sku,
+                "title": m.group("name").strip(),
+                # by-SKU URL 301s to the canonical slug PDP.
+                "product_url": f'{cfg["base_url"]}/{sku}.html',
+                "category": (m.group("cat") or "").strip().lower() or "ready-to-wear",
+                "fabric": None,
+                "tags": [],
+                "images": images.get(base, [])[:6],
+                "variants": [{
+                    "external_id": sku,
+                    "title": "Default",
+                    "price": price,
+                    "compare_at_price": None,
+                    "available": True,
+                }],
+            }
+            if limit and len(products) >= limit:
+                return list(products.values())
+    return list(products.values())
 
 
 ADAPTERS = {
