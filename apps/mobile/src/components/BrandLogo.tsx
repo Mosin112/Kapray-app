@@ -5,9 +5,18 @@ import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-na
 import { brandColors } from '../theme/tokens';
 import type { Brand } from '../types/db';
 
+/** 1–2 letter monogram: initials of the first two words, or first two letters
+ * of a single-word name. "Nishat Linen" → NL, "Khaadi" → KH, "BEECHTREE" → BE. */
+function monogram(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  return name.trim().slice(0, 2).toUpperCase();
+}
+
 /**
- * Brand logo chip: renders logo_url when present, else a §9 brand-color
- * wordmark tile (nishat maroon/gold, limelight black, khaadi rust, …).
+ * Brand logo chip: renders logo_url when present, else a §9 brand-color tile
+ * with a clean monogram (never a truncated full name). Scales the monogram to
+ * the tile so it reads at both feed-pin (small) and brand-page (large) sizes.
  */
 export function BrandLogo({
   brand,
@@ -30,7 +39,7 @@ export function BrandLogo({
       />
     );
   }
-  const fontSize = Math.max(8, Math.min(12, width / (brand.name.length * 0.62)));
+  const fontSize = Math.round(Math.min(height * 0.5, width * 0.42));
   return (
     <View
       style={[
@@ -41,9 +50,9 @@ export function BrandLogo({
     >
       <Text
         numberOfLines={1}
-        style={{ color: fallback.fg, fontSize, fontWeight: '800', letterSpacing: 0.5 }}
+        style={{ color: fallback.fg, fontSize, fontWeight: '800', letterSpacing: 1 }}
       >
-        {brand.name.toUpperCase()}
+        {monogram(brand.name)}
       </Text>
     </View>
   );

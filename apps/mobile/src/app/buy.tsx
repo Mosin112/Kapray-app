@@ -1,11 +1,11 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BackHandler, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 
 import { clickoutUrl } from '../lib/format';
-import { colors } from '../theme/tokens';
+import { colors, type as typeTokens } from '../theme/tokens';
 
 /**
  * WebView checkout (spec §8): full-screen brand site with UTM params.
@@ -52,6 +52,7 @@ export default function BuyScreen() {
   }, [canGoBack, dismiss]);
 
   if (!url) return null;
+  const target = clickoutUrl(url);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
@@ -71,21 +72,39 @@ export default function BuyScreen() {
           <Text style={styles.doneText}>Done</Text>
         </Pressable>
       </View>
-      <WebView
-        ref={webref}
-        source={{ uri: clickoutUrl(url) }}
-        style={{ flex: 1 }}
-        onNavigationStateChange={(nav) => setCanGoBack(nav.canGoBack)}
-        onShouldStartLoadWithRequest={(req) => {
-          // Hand OS-native schemes to the system; keep web (incl. 3DS) inside.
-          if (/^(tel:|mailto:|intent:|sms:|whatsapp:)/.test(req.url)) {
-            Linking.openURL(req.url).catch(() => {});
-            return false;
-          }
-          return true;
-        }}
-        startInLoadingState
-      />
+      {Platform.OS === 'web' ? (
+        // react-native-webview has no web implementation. The app ships on
+        // Android/iOS where the WebView renders inline; on web we hand off to
+        // a new tab so the browser preview still completes the flow.
+        <View style={styles.webFallback}>
+          <Text style={styles.webTitle}>Continue to {brandName}</Text>
+          <Text style={styles.webBody}>
+            Checkout opens on {domain}. In-app it loads right here; in a browser it opens a new tab.
+          </Text>
+          <Pressable
+            style={styles.webBtn}
+            onPress={() => Linking.openURL(target)}
+          >
+            <Text style={typeTokens.ctaLabel}>Open {brandName} ↗</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <WebView
+          ref={webref}
+          source={{ uri: target }}
+          style={{ flex: 1 }}
+          onNavigationStateChange={(nav) => setCanGoBack(nav.canGoBack)}
+          onShouldStartLoadWithRequest={(req) => {
+            // Hand OS-native schemes to the system; keep web (incl. 3DS) inside.
+            if (/^(tel:|mailto:|intent:|sms:|whatsapp:)/.test(req.url)) {
+              Linking.openURL(req.url).catch(() => {});
+              return false;
+            }
+            return true;
+          }}
+          startInLoadingState
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -114,4 +133,8 @@ const styles = StyleSheet.create({
   closeGlyph: { fontSize: 16, fontWeight: '700', color: colors.ink, lineHeight: 18 },
   done: { paddingHorizontal: 6, paddingVertical: 4 },
   doneText: { fontSize: 13, fontWeight: '700', color: colors.ink },
+  webFallback: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 14 },
+  webTitle: { fontSize: 18, fontWeight: '700', color: colors.ink },
+  webBody: { fontSize: 13, color: colors.muted, textAlign: 'center', lineHeight: 20, maxWidth: 360 },
+  webBtn: { backgroundColor: colors.ink, paddingVertical: 14, paddingHorizontal: 28, marginTop: 6 },
 });

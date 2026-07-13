@@ -62,10 +62,39 @@ export function useFeedProducts() {
       if (error) throw error;
       const rows = (data as unknown as FeedProduct[])
         .filter((p) => p.brand?.sync_status === 'live')
-        .filter(hasPlausiblePrice);
+        .filter(hasPlausiblePrice)
+        .filter(isWomensFashion);
       return interleaveByBrand(rows);
     },
   });
+}
+
+/**
+ * Women's clothing & accessories only (owner request, "as of now"). These
+ * brands are women-first, so we EXCLUDE the clearly-not-women lines rather
+ * than allowlist — default keep. Catches men's/kids items, home textiles,
+ * fragrance/beauty, and storefront junk (payment links, bath salt, fabric by
+ * the meter). Token-based so "women"/"woman" is never caught by "men".
+ */
+const EXCLUDE_EXACT = new Set([
+  'man', 'male', 'gent', 'gents', 'girl', 'girls', 'junior', 'infant', 'toddler',
+  'beauty', 'makeup', 'candle', 'candles', 'salt', 'soap', 'lotion',
+  'towel', 'towels', 'cushion', 'cushions', 'kitchen', 'crockery', 'tableware',
+  'decor', 'payment', 'voucher', 'giftcard', 'sample', 'tester', 'swatch',
+  'meter', 'meters',
+]);
+const EXCLUDE_PREFIX = [
+  'men', 'boy', 'kid', 'child', 'fragrance', 'perfum', 'cosmetic', 'home', 'bed',
+];
+
+function isWomensFashion(p: FeedProduct): boolean {
+  const text = `${p.category ?? ''} ${(p.tags ?? []).join(' ')}`.toLowerCase();
+  const tokens = text.split(/[^a-z0-9]+/).filter(Boolean);
+  for (const t of tokens) {
+    if (EXCLUDE_EXACT.has(t)) return false;
+    if (EXCLUDE_PREFIX.some((pre) => t.startsWith(pre))) return false;
+  }
+  return true;
 }
 
 /**

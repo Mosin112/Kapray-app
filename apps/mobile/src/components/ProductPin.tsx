@@ -59,12 +59,19 @@ export function ProductPin({ product, index }: { product: FeedProduct; index: nu
         </Pressable>
       </View>
       <View style={styles.meta}>
-        <View style={styles.brandRow}>
-          <BrandLogo brand={product.brand} width={26} height={13} />
+        <Pressable
+          style={styles.brandRow}
+          hitSlop={6}
+          onPress={(e) => {
+            e.stopPropagation();
+            router.push(`/brand/${product.brand.slug}`);
+          }}
+        >
+          <BrandLogo brand={product.brand} width={28} height={16} />
           <Text style={styles.brandName} numberOfLines={1}>
             {product.brand.name}
           </Text>
-        </View>
+        </Pressable>
         <Text style={styles.title} numberOfLines={1}>
           {product.title}
         </Text>

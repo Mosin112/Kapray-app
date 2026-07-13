@@ -1,9 +1,11 @@
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -26,6 +28,7 @@ export default function ProductScreen() {
   const wishlist = useWishlist();
   const { data: p, isLoading } = useProduct(id);
   const { data: all } = useFeedProducts();
+  const [heroIdx, setHeroIdx] = useState(0);
 
   if (isLoading || !p) {
     return (
@@ -48,9 +51,17 @@ export default function ProductScreen() {
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScrollView>
-        {/* Hero: swipeable gallery */}
+        {/* Hero: swipeable gallery (paged horizontal scroll, like a brand PDP) */}
         <View style={styles.heroWrap}>
-          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            nestedScrollEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={(e: NativeSyntheticEvent<NativeScrollEvent>) =>
+              setHeroIdx(Math.round(e.nativeEvent.contentOffset.x / heroW))
+            }
+          >
             {(p.images.length ? p.images : [null]).map((img, i) => (
               <View key={i} style={[styles.hero, { width: heroW }]}>
                 {img ? (
@@ -69,6 +80,13 @@ export default function ProductScreen() {
               </View>
             ))}
           </ScrollView>
+          {p.images.length > 1 ? (
+            <View style={styles.dots} pointerEvents="none">
+              {p.images.map((_, i) => (
+                <View key={i} style={[styles.dot, i === heroIdx && styles.dotOn]} />
+              ))}
+            </View>
+          ) : null}
           <Pressable style={[styles.rbtn, { top: 12, left: 28 }]} onPress={() => router.back()}>
             <Text style={{ fontSize: 15 }}>←</Text>
           </Pressable>
@@ -191,6 +209,17 @@ const styles = StyleSheet.create({
   },
   noImg: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#EFE8DA' },
   noImgText: { fontFamily: 'Georgia', fontSize: 18, color: '#A3947C', letterSpacing: 2 },
+  dots: {
+    position: 'absolute',
+    bottom: 12,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 5,
+  },
+  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.6)' },
+  dotOn: { backgroundColor: '#FFF', width: 16 },
   rbtn: {
     position: 'absolute',
     width: 34,
