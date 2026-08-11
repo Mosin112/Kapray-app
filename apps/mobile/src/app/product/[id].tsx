@@ -29,6 +29,8 @@ export default function ProductScreen() {
   const { data: p, isLoading } = useProduct(id);
   const { data: all } = useFeedProducts();
   const [heroIdx, setHeroIdx] = useState(0);
+  // Gallery images that fail to load degrade to the brand placeholder tile.
+  const [failed, setFailed] = useState<Record<number, boolean>>({});
 
   if (isLoading || !p) {
     return (
@@ -64,13 +66,15 @@ export default function ProductScreen() {
           >
             {(p.images.length ? p.images : [null]).map((img, i) => (
               <View key={i} style={[styles.hero, { width: heroW }]}>
-                {img ? (
+                {img && !failed[i] ? (
                   <Image
                     source={{ uri: cdnImage(img.src, 1080) }}
                     style={StyleSheet.absoluteFill}
                     contentFit="cover"
                     contentPosition="top"
                     transition={150}
+                    cachePolicy="memory-disk"
+                    onError={() => setFailed((f) => ({ ...f, [i]: true }))}
                   />
                 ) : (
                   <View style={[StyleSheet.absoluteFill, styles.noImg]}>

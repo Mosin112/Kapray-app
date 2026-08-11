@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { cdnImage, fmtPrice, offPct } from '../lib/format';
@@ -23,17 +23,23 @@ export function ProductPin({ product, index }: { product: FeedProduct; index: nu
   const img = product.images[0]?.src;
   const saved = wishlist.has(product.id);
   const currency = product.brand.currency;
+  // A CDN image that 404s/times out must degrade to the brand placeholder,
+  // never sit as a silent gray tile on the board.
+  const [imgFailed, setImgFailed] = useState(false);
 
   return (
     <Pressable style={styles.pin} onPress={() => router.push(`/product/${product.id}`)}>
       <View style={[styles.imgWrap, { height: HEIGHTS[index % 3] }]}>
-        {img ? (
+        {img && !imgFailed ? (
           <Image
             source={{ uri: cdnImage(img, 540) }}
             style={StyleSheet.absoluteFill}
             contentFit="cover"
             contentPosition="top"
             transition={150}
+            cachePolicy="memory-disk"
+            recyclingKey={product.id}
+            onError={() => setImgFailed(true)}
           />
         ) : (
           <View style={[StyleSheet.absoluteFill, styles.noImg]}>
